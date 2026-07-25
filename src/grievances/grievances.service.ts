@@ -482,22 +482,6 @@ cleared.push(grievance.id);
     const fromStatus = grievance.status;
     grievance.status = next;
     await this.grievanceRepo.save(grievance);
-
-    if (next === GrievanceStatus.RESOLVED) {
-      const citizen = await this.userRepo.findOne({
-        where: { id: grievance.citizenId },
-      });
-      this.notificationService.notify({
-        userId: grievance.citizenId,
-        type: NotificationType.GRIEVANCE_RESOLVED,
-        title: 'Grievance resolved',
-        body: `Grievance ${grievance.trackingCode} has been resolved. Please rate your experience.`,
-        grievanceId: grievance.id,
-        toEmail: citizen?.email,
-        trackingCode: grievance.trackingCode,
-      });
-    }
-
     await this.auditService.record({
       grievanceId: grievance.id,
       actorId,
