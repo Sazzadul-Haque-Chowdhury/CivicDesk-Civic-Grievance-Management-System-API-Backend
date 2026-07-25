@@ -36,7 +36,6 @@ import { AssignGrievanceDto } from './dto/assign-grievance.dto';
 import { QueryGrievancesDto } from './dto/query-grievance.dto';
 import { NotificationType } from 'src/common/enums';
 import { NotificationsService } from 'src/notifications/notifications.service';
-=======
 import { AuditLog } from './entities/audit-log.entity';
 @Injectable()
 export class GrievancesService {
@@ -119,12 +118,18 @@ export class GrievancesService {
 
     const saved = await this.grievanceRepo.save(grievance);
 
+    const citizen = await this.userRepo.findOne({
+      where: { id: grievance.citizenId },
+    });
+
     this.notificationService.notify({
       userId: grievance.citizenId,
       type: NotificationType.GRIEVANCE_SUBMITTED,
       title: 'Grievance received',
       body: `Your grievance ${grievance.trackingCode} has been received.`,
       grievanceId: grievance.id,
+      toEmail: citizen?.email,
+      trackingCode: grievance.trackingCode,
     });
 
     await this.auditService.record({
@@ -259,6 +264,8 @@ export class GrievancesService {
       title: 'New grievance assigned',
       body: `Grievance ${grievance.trackingCode} has been assigned to you.`,
       grievanceId: grievance.id,
+      toEmail: officer?.email,
+      trackingCode: grievance.trackingCode,
     });
 
     await this.auditService.record({
@@ -305,6 +312,9 @@ export class GrievancesService {
       grievance.assignedOfficer = null;
       await this.grievanceRepo.save(grievance);
 
+      const previousOfficer = await this.userRepo.findOne({
+        where: { id: previousOfficerId! },
+      });
       if (previousOfficerId) {
       await this.notificationService.notify({
         userId: previousOfficerId,
@@ -312,6 +322,8 @@ export class GrievancesService {
         title: 'Grievance unassigned',
         body: `Grievance ${grievance.trackingCode} was unassigned because you no longer meet eligibility.`,
         grievanceId: grievance.id,
+        toEmail: previousOfficer?.email,
+        trackingCode: grievance.trackingCode,
       });
     }
 
@@ -462,12 +474,17 @@ export class GrievancesService {
     grievance.status = next;
     await this.grievanceRepo.save(grievance);
 
+    const citizen = await this.userRepo.findOne({
+      where: { id: grievance.citizenId },
+    });
     this.notificationService.notify({
       userId: grievance.citizenId,
       type: NotificationType.GRIEVANCE_RESOLVED,
       title: 'Grievance resolved',
       body: `Grievance ${grievance.trackingCode} has been resolved. Please rate your experience.`,
       grievanceId: grievance.id,
+      toEmail: citizen?.email,
+      trackingCode: grievance.trackingCode,
     });
 
     await this.auditService.record({
