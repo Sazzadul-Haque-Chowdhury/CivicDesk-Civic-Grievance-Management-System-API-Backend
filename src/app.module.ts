@@ -34,10 +34,6 @@ import { CannedResponsesModule } from './canned-responses/canned-responses.modul
     MessagesModule,
     CommonModule,
     MailModule,
-    EscalationRulesModule,
-    TagsModule,
-    RatingsModule,
-    AttachmentsModule,
     ConfigModule.forRoot({ isGlobal: true }),
     ScheduleModule.forRoot(),
     TypeOrmModule.forRootAsync({

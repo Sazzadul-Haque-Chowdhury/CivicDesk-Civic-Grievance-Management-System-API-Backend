@@ -13,6 +13,8 @@ import { AI_SERVICE } from 'src/ai/ai.interface';
 import { FakeAiService } from 'src/ai/fake-ai.service';
 import { NotificationsService } from 'src/notifications/notifications.service';
 import { Role, GrievanceStatus, Priority } from 'src/common/enums';
+import { Tag } from 'src/tags/entities/tag.entity';
+import { RatingsService } from 'src/ratings/ratings.service';
 
 describe('GrievancesService', () => {
   let service: GrievancesService;
@@ -68,6 +70,17 @@ describe('GrievancesService', () => {
         { provide: SlaService, useValue: slaService },
         { provide: AI_SERVICE, useClass: FakeAiService },
         { provide: NotificationsService, useValue: notificationsService },
+        {
+          provide: getRepositoryToken(Tag),
+          useValue: {
+            findBy: jest.fn().mockResolvedValue([]),
+            find: jest.fn().mockResolvedValue([]),
+          },
+        },
+        {
+          provide: RatingsService,
+          useValue: { retractForGrievance: jest.fn().mockResolvedValue(null) },
+        },
       ],
     }).compile();
 

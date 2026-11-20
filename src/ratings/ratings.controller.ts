@@ -41,7 +41,7 @@ export class RatingsController {
     });
   }
 
-  @Roles(Role.OFFICER, Role.ADMIN)
+  @Roles(Role.OFFICER, Role.ADMIN, Role.CITIZEN)
   @Get()
   find(
     @Param('grievanceId', ParseUUIDPipe) grievanceId: string,

@@ -62,7 +62,12 @@ export class NotificationsService {
   }
 
   async markAllRead(userId: string) {
-    await this.notificationRepository.update({ userId }, { isRead: true });
+    await this.notificationRepository
+      .createQueryBuilder()
+      .update(Notification)
+      .set({ isRead: true })
+      .where('"userId" = :userId', { userId })
+      .execute();
     return { success: true };
   }
 

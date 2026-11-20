@@ -6,6 +6,7 @@ import { Message } from './entities/message.entity';
 import { GrievancesService } from 'src/grievances/grievances.service';
 import { Role, GrievanceStatus } from 'src/common/enums';
 import { NotificationsService } from 'src/notifications/notifications.service';
+import { UsersService } from 'src/users/users.service';
 
 describe('MessagesService', () => {
   let service: MessagesService;
@@ -45,6 +46,10 @@ describe('MessagesService', () => {
         { provide: getRepositoryToken(Message), useValue: messageRepo },
         { provide: GrievancesService, useValue: grievancesService },
         { provide: NotificationsService, useValue: { notify: jest.fn() } },
+        {
+          provide: UsersService,
+          useValue: { getAdminIds: jest.fn().mockResolvedValue([]) },
+        },
       ],
     }).compile();
 

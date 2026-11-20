@@ -9,4 +9,9 @@ export class AppController {
   getHello(): string {
     return this.appService.getHello();
   }
+
+  @Get('health')
+  getHealth(): { status: string; name: string } {
+    return { status: 'ok', name: 'CivicDesk API' };
+  }
 }
